@@ -4,10 +4,10 @@ pragma solidity ^0.8.9;
 // import package
 import "erc721a/contracts/ERC721A.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract Moe is ERC721A, Ownable, ReentrancyGuard {
+contract Moe is ERC721A, Ownable {
     // import util
     using Strings for uint256;
 
@@ -21,7 +21,8 @@ contract Moe is ERC721A, Ownable, ReentrancyGuard {
         "ipfs://QmWhpLwoAQ8dJB3Zw81rDBmnbnyCHhhdwtzmLgbBTUHGjE/";
 
     // mapping
-    mapping(address => uint256) public walletMints;
+    mapping(address => uint256) public holdingAmount;
+    mapping(address => uint256) public whitelist;
 
     // event
     event TokenMinted(uint256 supply);
@@ -32,32 +33,20 @@ contract Moe is ERC721A, Ownable, ReentrancyGuard {
         mintLimit = 5;
     }
 
-    // turn on/off of the sa;es
-    function toggleIsMintEnabled() external onlyOwner {
-        isMintEnabled = !isMintEnabled;
-    }
-
-    // change qty of supply
-    function setMaxSupply(uint256 maxSupply_) external onlyOwner {
-        maxSupply = maxSupply_;
-    }
-
-    // change mint Limit
-    function setMintLimit(uint256 mintLimit_) external onlyOwner {
-        mintLimit = mintLimit_;
-    }
-
     // single-mint
     function mint() external payable {
         // checker
         require(isMintEnabled, "minting not enabled");
-        require(walletMints[msg.sender] < mintLimit, "exceeds max per wallet");
+        require(
+            holdingAmount[msg.sender] < mintLimit,
+            "exceeds max per wallet"
+        );
         require(msg.value == mintPrice, "insuffient amount");
         // checking totalSupply add currently mint amount is less than max-supply
         require(totalSupply() + 1 <= maxSupply, "sold out");
 
         // increase the ntf count of owner
-        walletMints[msg.sender] += 1;
+        holdingAmount[msg.sender] += 1;
         _safeMint(msg.sender, 1);
         // increase total supply by emit token-minted function
         emit TokenMinted(totalSupply());
@@ -67,20 +56,24 @@ contract Moe is ERC721A, Ownable, ReentrancyGuard {
     function multiMint(uint256 quantity_) external payable {
         // checker
         require(isMintEnabled, "minting not enabled");
+        // checking totalSupply add currently mint amount is less than max-supply
+        require(totalSupply() + quantity_ <= maxSupply, "sold out");
         require(
-            walletMints[msg.sender] + quantity_ <= mintLimit,
+            holdingAmount[msg.sender] + quantity_ <= mintLimit,
             "exceeds max per wallet"
         );
-        require(quantity_ * mintPrice <= msg.value, "insuffient amount");
+        require(quantity_ * mintPrice == msg.value, "insuffient amount");
         // checking totalSupply add currently mint amount is less than max-supply
         require(totalSupply() + quantity_ <= maxSupply, "sold out");
 
         // increase the ntf count of owner
-        walletMints[msg.sender] += quantity_;
+        holdingAmount[msg.sender] += quantity_;
         _safeMint(msg.sender, quantity_);
         // increase total supply by emit token-minted function
         emit TokenMinted(totalSupply());
     }
+
+    // internal method
 
     function tokenURI(
         uint256 tokenId_
@@ -99,12 +92,51 @@ contract Moe is ERC721A, Ownable, ReentrancyGuard {
                 : "";
     }
 
-    // set metadata of nft
+    function _baseURI() internal view override returns (string memory) {
+        return _baseUri;
+    }
+
+    // admin method
+
+    // turn on/off of the sales
+    function toggleIsMintEnabled() external onlyOwner {
+        isMintEnabled = !isMintEnabled;
+    }
+
+    // change qty of supply
+    function setMaxSupply(uint256 maxSupply_) external onlyOwner {
+        maxSupply = maxSupply_;
+    }
+
+    // change mint Limit
+    function setMintLimit(uint256 mintLimit_) external onlyOwner {
+        mintLimit = mintLimit_;
+    }
+
+    // set ipfs hash to base uri
     function setBaseURI(string memory newBaseUri) external onlyOwner {
         _baseUri = newBaseUri;
     }
 
-    function _baseURI() internal view override returns (string memory) {
-        return _baseUri;
+    // set whitelist
+    function setWhitelist(
+        address[] memory addresses,
+        uint256[] memory mintAmount
+    ) external onlyOwner {
+        require(
+            addresses.length == mintAmount.length,
+            "addresses does not match mintAmount length"
+        );
+        for (uint256 i = 0; i < addresses.length; i++) {
+            whitelist[addresses[i]] = mintAmount[i];
+        }
+    }
+
+    // set whitelist mint amount
+    function setWhitelistMintAmount(
+        address _address,
+        uint256 amount
+    ) external onlyOwner {
+        whitelist[_address] = amount;
     }
 }
