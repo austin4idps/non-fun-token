@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 
 async function main() {
-  const factory = await hre.ethers.getContractFactory("Moe");
+  const factory = await hre.ethers.getContractFactory("Sphere");
   const contract = await factory.deploy();
   await contract.deployed();
   // console.log(contract);
@@ -15,7 +15,7 @@ async function main() {
 
   await hre.run("verify:verify", {
     address: contract.address,
-    contract: "contracts/moe.sol:Moe", //Filename.sol:ClassName
+    contract: "contracts/sphere_nft.sol:Sphere", //Filename.sol:ClassName
   });
 }
 main()
