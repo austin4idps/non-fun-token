@@ -6,7 +6,7 @@ import "erc721a/contracts/ERC721A.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract TimberlandClassisBoots is ERC721A, Ownable {
+contract TimberlandJacket is ERC721A, Ownable {
     // import util
     using Strings for uint256;
 
@@ -32,7 +32,7 @@ contract TimberlandClassisBoots is ERC721A, Ownable {
         uint256 supplyAmount,
         uint256 price,
         string memory baseUri
-    ) ERC721A("TimberlandClassisBoots", "TCB") {
+    ) ERC721A("TimberlandJacket", "TJ") {
         maxSupply = supplyAmount;
         mintPrice = price * 10 ** 18;
         _baseUri = baseUri;
