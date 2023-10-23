@@ -2,11 +2,11 @@ const hre = require("hardhat");
 require("dotenv").config();
 
 async function main() {
-  const factory = await hre.ethers.getContractFactory("TimberlandClassisBoots");
+  const factory = await hre.ethers.getContractFactory("TimberlandRockBag");
 
-  const supply = 152;
-  const totalPrice = 389 + 20;
-  const tokenURI = process.env.TOKEN_URI;
+  const supply = 102;
+  const totalPrice = 79 + 20;
+  const tokenURI = "ipfs://QmdnYYc4wBw1GDuf4V3pk8DDKZLueGLyrv9WPYNzAyAGgm/";
 
   console.log(supply);
   console.log(totalPrice);
@@ -25,7 +25,7 @@ async function main() {
 
   await hre.run("verify:verify", {
     address: contract.address,
-    contract: "contracts/timberland-classis-boot.sol:TimberlandClassisBoots", //Filename.sol:ClassName
+    contract: "contracts/timeberland-rock-bag.sol:TimberlandRockBag", //Filename.sol:ClassName
     constructorArguments: [supply, totalPrice, tokenURI],
   });
 }
