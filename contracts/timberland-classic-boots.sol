@@ -6,7 +6,7 @@ import "erc721a/contracts/ERC721A.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract TimberlandKnittedHat is ERC721A, Ownable {
+contract TimberlandClassicBoots is ERC721A, Ownable {
     // import util
     using Strings for uint256;
 
@@ -32,7 +32,7 @@ contract TimberlandKnittedHat is ERC721A, Ownable {
         uint256 supplyAmount,
         uint256 price,
         string memory baseUri
-    ) ERC721A("TimberlandKnittedHat", "TKH") {
+    ) ERC721A("TimberlandClassicBoots", "TCB") {
         maxSupply = supplyAmount;
         mintPrice = price * 10 ** 18;
         _baseUri = baseUri;
@@ -41,12 +41,18 @@ contract TimberlandKnittedHat is ERC721A, Ownable {
         holdingAmount[owner()] = maxSupply;
     }
 
-    // safe transfer mint
-    function transferNFT(address to, uint256 tokenId) external onlyOwner {
-        require(holdingAmount[to] == 0, "sold out");
-        safeTransferFrom(msg.sender, to, tokenId);
-        holdingAmount[to] += 1;
-        holdingAmount[msg.sender] -= 1;
+    // batch transfer mint
+    function batchTransferNFT(
+        address[] memory to,
+        uint256[] memory tokenId
+    ) external onlyOwner {
+        require(to.length == tokenId.length, "Arrays must be of equal length");
+        for (uint256 i = 0; i < to.length; i++) {
+            require(holdingAmount[to[i]] == 0, "Address already owns a token");
+            safeTransferFrom(msg.sender, to[i], tokenId[i]);
+            holdingAmount[to[i]] += 1;
+            holdingAmount[msg.sender] -= 1;
+        }
     }
 
     // internal method
