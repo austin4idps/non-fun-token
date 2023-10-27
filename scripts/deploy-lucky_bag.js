@@ -5,8 +5,8 @@ async function main() {
   const factory = await hre.ethers.getContractFactory("TimberlandLuckyBag");
 
   const supply = 102;
-  const totalPrice = 59 + 20;
-  const tokenURI = "ipfs://QmXoX2TRBHv9cfWnzLiL7RAC6SbyDC2mEVAq6aX4FV9Nzp/";
+  const totalPrice = 59;
+  const tokenURI = "ipfs://QmWFBUEf4rKdDSzrK4Dp1GRc4ZCgVPcQTeWsb1D7urYTe8/";
 
   console.log(supply);
   console.log(totalPrice);

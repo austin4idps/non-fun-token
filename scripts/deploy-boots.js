@@ -6,7 +6,7 @@ async function main() {
 
   const supply = 157;
   const totalPrice = 389;
-  const tokenURI = "ipfs://QmSeQAnLsQgRRw2ZMyFzb87ug7kzCsQhXTJHA8yH2EQgHm/"; // original pic
+  const tokenURI = "ipfs://QmPfwkVgsva3JurS2vt233WLKPqBRutiM1LrXTPeW28yV3/"; // original pic
 
   console.log(supply);
   console.log(totalPrice);
